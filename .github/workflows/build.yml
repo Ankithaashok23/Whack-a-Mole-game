@@ -1,0 +1,25 @@
+name: Build (Windows)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+      - name: Install mingw gcc
+        run: |
+          pacman -S --noconfirm mingw-w64-x86_64-gcc
+      - name: Build
+        run: |
+          gcc -std=c11 -O2 server.c mongoose.c -o server.exe -lws2_32 -Wall -Wextra
+      - name: List files
+        run: dir

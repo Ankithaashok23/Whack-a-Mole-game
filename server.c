@@ -151,9 +151,14 @@ int main() {
     srand(time(NULL));
     struct mg_mgr mgr;
     mg_mgr_init(&mgr);
-    mg_http_listen(&mgr, s_listening_address, fn, &mgr);
+    struct mg_connection *lc = mg_http_listen(&mgr, s_listening_address, fn, &mgr);
+    if (lc == NULL) {
+        fprintf(stderr, "Failed to bind to %s\n", s_listening_address);
+        mg_mgr_free(&mgr);
+        return 1;
+    }
 
-    printf("Server running on http://localhost:8000\n");
+    printf("Server running on %s\n", s_listening_address);
     spawn_mole();
 
     for (;;) mg_mgr_poll(&mgr, 1000);
