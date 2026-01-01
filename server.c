@@ -131,6 +131,14 @@ static void fn(struct mg_connection *c, int ev, void *ev_data) {
         } else if (mg_match(hm->uri, mg_str("/resume"), NULL)) {
             is_paused = 0;
             mg_http_reply(c, 200, "Content-Type: text/plain\r\n", "resumed");
+        } else if (mg_match(hm->uri, mg_str("/spawn"), NULL)) {
+            // Spawn a new mole on demand (used by frontend to control spawn rate)
+            if (!is_paused && misses < max_misses) {
+                spawn_mole();
+                mg_http_reply(c, 200, "Content-Type: text/plain\r\n", "ok");
+            } else {
+                mg_http_reply(c, 200, "Content-Type: text/plain\r\n", "paused_or_over");
+            }
     } else {
             // Serve static files from the web directory
             struct mg_http_serve_opts opts = {0};

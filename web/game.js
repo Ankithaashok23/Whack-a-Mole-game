@@ -167,7 +167,10 @@ pauseBtn.onclick = async () => {
     });
     moleInterval = setInterval(() => {
       if (!gameOver && !isPaused) {
-        updateGame();
+        (async () => {
+          try { await fetch('/spawn', { method: 'POST' }); } catch (_) {}
+          updateGame();
+        })();
       }
     }, moleSpawnInterval);
   }
